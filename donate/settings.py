@@ -14,13 +14,15 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+from decouple import config
+import os
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-juz$z8fck3ks6^4cmw2xqlv(%qs$lgk9^61_p=$870!n!jtau3'
+# SECRET_KEY = 'django-insecure-juz$z8fck3ks6^4cmw2xqlv(%qs$lgk9^61_p=$870!n!jtau3'
+SECRET_KEY = config('SECRET_KEY', default='your_default_secret_key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -60,7 +62,8 @@ ROOT_URLCONF = 'donate.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # 'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Set the template directory
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -79,12 +82,33 @@ WSGI_APPLICATION = 'donate.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
+
+
+# for the postgres sql
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DATABASE_NAME', default='donate_db'),
+        'USER': config('DATABASE_USER', default='donate_user'),
+        'PASSWORD': config('DATABASE_PASSWORD', default='your_secure_password'),
+        'HOST': config('DATABASE_HOST', default='localhost'),
+        'PORT': config('DATABASE_PORT', default='5432'),
     }
 }
+
+# print("DATABASE_NAME:", config('DATABASE_NAME', default='donate_db'))
+# print("DATABASE_USER:", config('DATABASE_USER', default='donate_user'))
+# print("DATABASE_PASSWORD:", config('DATABASE_PASSWORD', default='your_secure_password'))
+# print("DATABASE_HOST:", config('DATABASE_HOST', default='localhost'))
+# print("DATABASE_PORT:", config('DATABASE_PORT', default='5432'))
+# print("SECRET_KEY:", config('SECRET_KEY', default='your_default_secret_key'))
 
 
 # Password validation
