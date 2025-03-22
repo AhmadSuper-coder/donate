@@ -1,11 +1,634 @@
+{% load static %}  <!-- Must be at the top of the file -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Django App</title>
+    <title>Donation Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("{% static 'img/bg-img.jpeg' %}") no-repeat center center fixed;
+            background-size: cover;
+            filter: blur(4px);
+            z-index: -1;
+        }
+
+        .background::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 50px auto;
+            z-index: 10;
+            position: relative;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: #ffcc00;
+            color: #000;
+        }
+        .btn-custom {
+            background: linear-gradient(to right, #ffcc00, #ff9900);
+            color: #fff;
+            border: none;
+        }
+        .btn-custom:hover {
+            background: linear-gradient(to right, #ff9900, #ffcc00);
+        }
+        h1 {
+            color: #fff;
+        }
+    </style>
+
 </head>
+
 <body>
-    <h1>Welcome to My Django App</h1>
+    <div class="background"></div>
+        <div class="container mt-5">
+            <div class="text-center mb-4">
+                <h1>Angels Foundation</h1>
+                <a href="/" class="btn btn-custom mt-2">Home</a>
+            </div>
+
+            <div class="form-container">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="donate-once-tab" data-bs-toggle="tab" data-bs-target="#donate-once" type="button" role="tab">Donate Once</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="weekly-tab" data-bs-toggle="tab" data-bs-target="#weekly" type="button" role="tab">Weekly</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="monthly-tab" data-bs-toggle="tab" data-bs-target="#monthly" type="button" role="tab">Monthly</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="quarterly-tab" data-bs-toggle="tab" data-bs-target="#quarterly" type="button" role="tab">Quarterly</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="yearly-tab" data-bs-toggle="tab" data-bs-target="#yearly" type="button" role="tab">Yearly</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="donate-once" role="tabpanel">
+                        <form id="donation-form" action="/api/donate/" method="post">
+                            <input type="hidden" name="subscription_enabled" value="0">
+                            <input type="hidden" name="subscriptionFrequency" value="">
+                            <h5 class="mt-4">Donate & Get Benefit of 80G</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="amount" class="form-label">Amount *</label>
+                                <input type="number" name="amount" class="form-control" id="amount" min=
+                                1 required placeholder="Enter amount">
+                                <div class="invalid-feedback">Please enter minimum 1 Inr.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="mobileNumber" class="form-label">Mobile Number *</label>
+                                <input type="tel" class="form-control" name="mobile" id="mobileNumber" pattern="^[0-9]{10}$" placeholder="Enter Mobile" required>
+                                <div class="invalid-feedback">Please enter a valid 10-digit mobile number.</div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">Name *</label>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Enter Name" required>
+                                <div class="invalid-feedback">Please enter your name.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email" required>
+                                <div class="invalid-feedback">Please enter a valid email address.</div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="pan" class="form-label">PAN No.</label>
+                                <input type="text" class="form-control" id="pan" name="pan" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" placeholder="Enter Pan No">
+                                <div class="invalid-feedback">Please enter a valid PAN number (e.g., ABCDE1234F).</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="state" class="form-label">State *</label>
+                                <select class="form-select" id="state" name="state" required>
+                                    <option value="" selected>Select your state</option>
+                                    <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                    <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                                    <option value="Assam">Assam</option>
+                                    <option value="Bihar">Bihar</option>
+                                    <option value="Chhattisgarh">Chhattisgarh</option>
+                                    <option value="Goa">Goa</option>
+                                    <option value="Gujarat">Gujarat</option>
+                                    <option value="Haryana">Haryana</option>
+                                    <option value="Himachal Pradesh">Himachal Pradesh</option>
+                                    <option value="Jharkhand">Jharkhand</option>
+                                    <option value="Karnataka">Karnataka</option>
+                                    <option value="Kerala">Kerala</option>
+                                    <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                    <option value="Maharashtra">Maharashtra</option>
+                                    <option value="Manipur">Manipur</option>
+                                    <option value="Meghalaya">Meghalaya</option>
+                                    <option value="Mizoram">Mizoram</option>
+                                    <option value="Nagaland">Nagaland</option>
+                                    <option value="Odisha">Odisha</option>
+                                    <option value="Punjab">Punjab</option>
+                                    <option value="Rajasthan">Rajasthan</option>
+                                    <option value="Sikkim">Sikkim</option>
+                                    <option value="Tamil Nadu">Tamil Nadu</option>
+                                    <option value="Telangana">Telangana</option>
+                                    <option value="Tripura">Tripura</option>
+                                    <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                    <option value="Uttarakhand">Uttarakhand</option>
+                                    <option value="West Bengal">West Bengal</option>
+                                    <option value="Andaman & Nicobar Islands">Andaman & Nicobar Islands</option>
+                                    <option value="Chandigarh">Chandigarh</option>
+                                    <option value="Dadra & Nagar Haveli & Daman & Diu">Dadra & Nagar Haveli & Daman & Diu</option>
+                                    <option value="Lakshadweep">Lakshadweep</option>
+                                    <option value="Delhi">Delhi</option>
+                                    <option value="Puducherry">Puducherry</option>
+                                    <option value="Ladakh">Ladakh</option>
+                                    <option value="Lakshadweep">Lakshadweep</option>
+                                    <option value="Jammu & Kashmir">Jammu & Kashmir</option>
+                                    <option value="Nagaland">Nagaland</option>
+                                </select>
+                                <div class="invalid-feedback">Please select your state.</div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-custom">PAY NOW</button>
+                        </div>
+
+                        </form>
+                    </div>
+
+
+<!--                     ############ We will do testing with weekly okay ############ -->
+                    <div class="tab-pane fade" id="weekly" role="tabpanel">
+                        <form action="create_sub.php" method="post">
+                            <input type="hidden" name="subscription_enabled" value="1">
+                            <input type="hidden" name="subscriptionFrequency" value="WEEKLY">
+                            <h5 class="mt-4">Donate & Get Benefit of 80G</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="amount" class="form-label">Amount *</label>
+                                <input type="number" name="amount" class="form-control" id="amount" min=
+                                1 required placeholder="Enter amount">
+                                <div class="invalid-feedback">Please enter minimum 1 Inr.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="mobileNumber" class="form-label">Mobile Number *</label>
+                                <input type="tel" class="form-control" name="mobile" id="mobileNumber" pattern="^[0-9]{10}$" placeholder="Enter Mobile" required>
+                                <div class="invalid-feedback">Please enter a valid 10-digit mobile number.</div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">Name *</label>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Enter Name" required>
+                                <div class="invalid-feedback">Please enter your name.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email" required>
+                                <div class="invalid-feedback">Please enter a valid email address.</div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="pan" class="form-label">PAN No.</label>
+                                <input type="text" class="form-control" id="pan" name="pan" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" placeholder="Enter Pan No">
+                                <div class="invalid-feedback">Please enter a valid PAN number (e.g., ABCDE1234F).</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="state" class="form-label">State *</label>
+                                <select class="form-select" id="state" name="state" required>
+                                    <option value="" selected>Select your state</option>
+                                    <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                    <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                                    <option value="Assam">Assam</option>
+                                    <option value="Bihar">Bihar</option>
+                                    <option value="Chhattisgarh">Chhattisgarh</option>
+                                    <option value="Goa">Goa</option>
+                                    <option value="Gujarat">Gujarat</option>
+                                    <option value="Haryana">Haryana</option>
+                                    <option value="Himachal Pradesh">Himachal Pradesh</option>
+                                    <option value="Jharkhand">Jharkhand</option>
+                                    <option value="Karnataka">Karnataka</option>
+                                    <option value="Kerala">Kerala</option>
+                                    <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                    <option value="Maharashtra">Maharashtra</option>
+                                    <option value="Manipur">Manipur</option>
+                                    <option value="Meghalaya">Meghalaya</option>
+                                    <option value="Mizoram">Mizoram</option>
+                                    <option value="Nagaland">Nagaland</option>
+                                    <option value="Odisha">Odisha</option>
+                                    <option value="Punjab">Punjab</option>
+                                    <option value="Rajasthan">Rajasthan</option>
+                                    <option value="Sikkim">Sikkim</option>
+                                    <option value="Tamil Nadu">Tamil Nadu</option>
+                                    <option value="Telangana">Telangana</option>
+                                    <option value="Tripura">Tripura</option>
+                                    <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                    <option value="Uttarakhand">Uttarakhand</option>
+                                    <option value="West Bengal">West Bengal</option>
+                                    <option value="Andaman & Nicobar Islands">Andaman & Nicobar Islands</option>
+                                    <option value="Chandigarh">Chandigarh</option>
+                                    <option value="Dadra & Nagar Haveli & Daman & Diu">Dadra & Nagar Haveli & Daman & Diu</option>
+                                    <option value="Lakshadweep">Lakshadweep</option>
+                                    <option value="Delhi">Delhi</option>
+                                    <option value="Puducherry">Puducherry</option>
+                                    <option value="Ladakh">Ladakh</option>
+                                    <option value="Lakshadweep">Lakshadweep</option>
+                                    <option value="Jammu & Kashmir">Jammu & Kashmir</option>
+                                    <option value="Nagaland">Nagaland</option>
+                                </select>
+                                <div class="invalid-feedback">Please select your state.</div>
+                            </div>
+                        </div>
+
+                        <!-- ✅ Adding the UPI ID Input Field Here -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="upi_id" class="form-label">UPI ID *</label>
+                                <input type="text" class="form-control" id="upi_id" name="upi_id" placeholder="Enter UPI ID" required pattern="^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$">
+                                <div class="invalid-feedback">Please enter a valid UPI ID (e.g., username@upi).</div>
+                                <small id="upi_status" style="display:none;"></small>
+                            </div>
+                        </div>
+                        <!-- ✅ End of UPI ID Field -->
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-custom">SUBSCRIBE</button>
+                        </div>
+                        </form>
+                    </div>
+
+
+
+
+
+<!--                    * ##################3 mothy start from here -->
+                    <div class="tab-pane fade" id="monthly" role="tabpanel">
+                        <form action="save.php" method="post">
+                            <input type="hidden" name="subscription_enabled" value="1">
+                            <input type="hidden" name="subscriptionFrequency" value="MONTHLY">
+
+                            <h5 class="mt-4">Donate & Get Benefit of 80G</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="amount" class="form-label">Amount *</label>
+                                <input type="number" name="amount" class="form-control" id="amount" min=
+                                1 required placeholder="Enter amount">
+                                <div class="invalid-feedback">Please enter minimum 1 Inr.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="mobileNumber" class="form-label">Mobile Number *</label>
+                                <input type="tel" class="form-control" name="mobile" id="mobileNumber" pattern="^[0-9]{10}$" placeholder="Enter Mobile" required>
+                                <div class="invalid-feedback">Please enter a valid 10-digit mobile number.</div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">Name *</label>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Enter Name" required>
+                                <div class="invalid-feedback">Please enter your name.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email" required>
+                                <div class="invalid-feedback">Please enter a valid email address.</div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="pan" class="form-label">PAN No.</label>
+                                <input type="text" class="form-control" id="pan" name="pan" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" placeholder="Enter Pan No">
+                                <div class="invalid-feedback">Please enter a valid PAN number (e.g., ABCDE1234F).</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="state" class="form-label">State *</label>
+                                <select class="form-select" id="state" name="state" required>
+                                    <option value="" selected>Select your state</option>
+                                    <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                    <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                                    <option value="Assam">Assam</option>
+                                    <option value="Bihar">Bihar</option>
+                                    <option value="Chhattisgarh">Chhattisgarh</option>
+                                    <option value="Goa">Goa</option>
+                                    <option value="Gujarat">Gujarat</option>
+                                    <option value="Haryana">Haryana</option>
+                                    <option value="Himachal Pradesh">Himachal Pradesh</option>
+                                    <option value="Jharkhand">Jharkhand</option>
+                                    <option value="Karnataka">Karnataka</option>
+                                    <option value="Kerala">Kerala</option>
+                                    <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                    <option value="Maharashtra">Maharashtra</option>
+                                    <option value="Manipur">Manipur</option>
+                                    <option value="Meghalaya">Meghalaya</option>
+                                    <option value="Mizoram">Mizoram</option>
+                                    <option value="Nagaland">Nagaland</option>
+                                    <option value="Odisha">Odisha</option>
+                                    <option value="Punjab">Punjab</option>
+                                    <option value="Rajasthan">Rajasthan</option>
+                                    <option value="Sikkim">Sikkim</option>
+                                    <option value="Tamil Nadu">Tamil Nadu</option>
+                                    <option value="Telangana">Telangana</option>
+                                    <option value="Tripura">Tripura</option>
+                                    <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                    <option value="Uttarakhand">Uttarakhand</option>
+                                    <option value="West Bengal">West Bengal</option>
+                                    <option value="Andaman & Nicobar Islands">Andaman & Nicobar Islands</option>
+                                    <option value="Chandigarh">Chandigarh</option>
+                                    <option value="Dadra & Nagar Haveli & Daman & Diu">Dadra & Nagar Haveli & Daman & Diu</option>
+                                    <option value="Lakshadweep">Lakshadweep</option>
+                                    <option value="Delhi">Delhi</option>
+                                    <option value="Puducherry">Puducherry</option>
+                                    <option value="Ladakh">Ladakh</option>
+                                    <option value="Lakshadweep">Lakshadweep</option>
+                                    <option value="Jammu & Kashmir">Jammu & Kashmir</option>
+                                    <option value="Nagaland">Nagaland</option>
+                                </select>
+                                <div class="invalid-feedback">Please select your state.</div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-custom">SUBSCRIBE</button>
+                        </div>
+
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="quarterly" role="tabpanel">
+                        <form action="save.php" method="post">
+                            <input type="hidden" name="subscription_enabled" value="1">
+                            <input type="hidden" name="subscriptionFrequency" value="QUARTERLY">
+                            <h5 class="mt-4">Donate & Get Benefit of 80G</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="amount" class="form-label">Amount *</label>
+                                <input type="number" name="amount" class="form-control" id="amount" min=
+                                1 required placeholder="Enter amount">
+                                <div class="invalid-feedback">Please enter minimum 1 Inr.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="mobileNumber" class="form-label">Mobile Number *</label>
+                                <input type="tel" class="form-control" name="mobile" id="mobileNumber" pattern="^[0-9]{10}$" placeholder="Enter Mobile" required>
+                                <div class="invalid-feedback">Please enter a valid 10-digit mobile number.</div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">Name *</label>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Enter Name" required>
+                                <div class="invalid-feedback">Please enter your name.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email" required>
+                                <div class="invalid-feedback">Please enter a valid email address.</div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="pan" class="form-label">PAN No.</label>
+                                <input type="text" class="form-control" id="pan" name="pan" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" placeholder="Enter Pan No">
+                                <div class="invalid-feedback">Please enter a valid PAN number (e.g., ABCDE1234F).</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="state" class="form-label">State *</label>
+                                <select class="form-select" id="state" name="state" required>
+                                    <option value="" selected>Select your state</option>
+                                    <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                    <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                                    <option value="Assam">Assam</option>
+                                    <option value="Bihar">Bihar</option>
+                                    <option value="Chhattisgarh">Chhattisgarh</option>
+                                    <option value="Goa">Goa</option>
+                                    <option value="Gujarat">Gujarat</option>
+                                    <option value="Haryana">Haryana</option>
+                                    <option value="Himachal Pradesh">Himachal Pradesh</option>
+                                    <option value="Jharkhand">Jharkhand</option>
+                                    <option value="Karnataka">Karnataka</option>
+                                    <option value="Kerala">Kerala</option>
+                                    <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                    <option value="Maharashtra">Maharashtra</option>
+                                    <option value="Manipur">Manipur</option>
+                                    <option value="Meghalaya">Meghalaya</option>
+                                    <option value="Mizoram">Mizoram</option>
+                                    <option value="Nagaland">Nagaland</option>
+                                    <option value="Odisha">Odisha</option>
+                                    <option value="Punjab">Punjab</option>
+                                    <option value="Rajasthan">Rajasthan</option>
+                                    <option value="Sikkim">Sikkim</option>
+                                    <option value="Tamil Nadu">Tamil Nadu</option>
+                                    <option value="Telangana">Telangana</option>
+                                    <option value="Tripura">Tripura</option>
+                                    <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                    <option value="Uttarakhand">Uttarakhand</option>
+                                    <option value="West Bengal">West Bengal</option>
+                                    <option value="Andaman & Nicobar Islands">Andaman & Nicobar Islands</option>
+                                    <option value="Chandigarh">Chandigarh</option>
+                                    <option value="Dadra & Nagar Haveli & Daman & Diu">Dadra & Nagar Haveli & Daman & Diu</option>
+                                    <option value="Lakshadweep">Lakshadweep</option>
+                                    <option value="Delhi">Delhi</option>
+                                    <option value="Puducherry">Puducherry</option>
+                                    <option value="Ladakh">Ladakh</option>
+                                    <option value="Lakshadweep">Lakshadweep</option>
+                                    <option value="Jammu & Kashmir">Jammu & Kashmir</option>
+                                    <option value="Nagaland">Nagaland</option>
+                                </select>
+                                <div class="invalid-feedback">Please select your state.</div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-custom">SUBSCRIBE</button>
+                        </div>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="yearly" role="tabpanel">
+                        <form action="save.php" method="post">
+                            <input type="hidden" name="subscription_enabled" value="1">
+                            <input type="hidden" name="subscriptionFrequency" value="YEARLY">
+                            <h5 class="mt-4">Donate & Get Benefit of 80G</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="amount" class="form-label">Amount *</label>
+                                <input type="number" name="amount" class="form-control" id="amount" min=
+                                1 required placeholder="Enter amount">
+                                <div class="invalid-feedback">Please enter minimum 1 Inr.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="mobileNumber" class="form-label">Mobile Number *</label>
+                                <input type="tel" class="form-control" name="mobile" id="mobileNumber" pattern="^[0-9]{10}$" placeholder="Enter Mobile" required>
+                                <div class="invalid-feedback">Please enter a valid 10-digit mobile number.</div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">Name *</label>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Enter Name" required>
+                                <div class="invalid-feedback">Please enter your name.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email" required>
+                                <div class="invalid-feedback">Please enter a valid email address.</div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="pan" class="form-label">PAN No.</label>
+                                <input type="text" class="form-control" id="pan" name="pan" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" placeholder="Enter Pan No">
+                                <div class="invalid-feedback">Please enter a valid PAN number (e.g., ABCDE1234F).</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="state" class="form-label">State *</label>
+                                <select class="form-select" id="state" name="state" required>
+                                    <option value="" selected>Select your state</option>
+                                    <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                    <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                                    <option value="Assam">Assam</option>
+                                    <option value="Bihar">Bihar</option>
+                                    <option value="Chhattisgarh">Chhattisgarh</option>
+                                    <option value="Goa">Goa</option>
+                                    <option value="Gujarat">Gujarat</option>
+                                    <option value="Haryana">Haryana</option>
+                                    <option value="Himachal Pradesh">Himachal Pradesh</option>
+                                    <option value="Jharkhand">Jharkhand</option>
+                                    <option value="Karnataka">Karnataka</option>
+                                    <option value="Kerala">Kerala</option>
+                                    <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                    <option value="Maharashtra">Maharashtra</option>
+                                    <option value="Manipur">Manipur</option>
+                                    <option value="Meghalaya">Meghalaya</option>
+                                    <option value="Mizoram">Mizoram</option>
+                                    <option value="Nagaland">Nagaland</option>
+                                    <option value="Odisha">Odisha</option>
+                                    <option value="Punjab">Punjab</option>
+                                    <option value="Rajasthan">Rajasthan</option>
+                                    <option value="Sikkim">Sikkim</option>
+                                    <option value="Tamil Nadu">Tamil Nadu</option>
+                                    <option value="Telangana">Telangana</option>
+                                    <option value="Tripura">Tripura</option>
+                                    <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                    <option value="Uttarakhand">Uttarakhand</option>
+                                    <option value="West Bengal">West Bengal</option>
+                                    <option value="Andaman & Nicobar Islands">Andaman & Nicobar Islands</option>
+                                    <option value="Chandigarh">Chandigarh</option>
+                                    <option value="Dadra & Nagar Haveli & Daman & Diu">Dadra & Nagar Haveli & Daman & Diu</option>
+                                    <option value="Lakshadweep">Lakshadweep</option>
+                                    <option value="Delhi">Delhi</option>
+                                    <option value="Puducherry">Puducherry</option>
+                                    <option value="Ladakh">Ladakh</option>
+                                    <option value="Lakshadweep">Lakshadweep</option>
+                                    <option value="Jammu & Kashmir">Jammu & Kashmir</option>
+                                    <option value="Nagaland">Nagaland</option>
+                                </select>
+                                <div class="invalid-feedback">Please select your state.</div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-custom">SUBSCRIBE</button>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <script>
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const errorMessage = urlParams.get('error');
+            if (errorMessage) {
+                const errorDiv = document.getElementById('error-message');
+                errorDiv.textContent = errorMessage;
+                errorDiv.style.display = 'block';
+            }
+        };
+
+        document.getElementById('mobileNumber').addEventListener('input', function (e) {
+            const mobileInput = this;
+            this.value = mobileInput.value.replace(/[^0-9]/g, '');
+            if (!/^[0-9]{10}$/.test(mobileInput.value)) {
+                mobileInput.setCustomValidity('Please enter a valid 10-digit mobile number.');
+            } else {
+                mobileInput.setCustomValidity('');
+            }
+        });
+
+        // JavaScript for front-end validation
+        (function () {
+            'use strict'
+            const form = document.getElementById('donation-form');
+
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                form.classList.add('was-validated');
+            }, false);
+
+
+        })();
+
+
+
+        /* document.getElementById("upi_id").addEventListener("blur", function () {
+            let upiId = this.value;
+            let statusText = document.getElementById("upi_status");
+
+            if (!upiId.match(/^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/)) {
+                statusText.style.display = "block";
+                statusText.style.color = "red";
+                statusText.innerText = "Invalid UPI format.";
+                return;
+            }
+
+            fetch("verify_upi.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ upi_id: upiId }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                statusText.style.display = "block";
+                if (data.status === "success") {
+                    statusText.style.color = "green";
+                    statusText.innerText = "UPI ID is valid.";
+                } else {
+                    statusText.style.color = "red";
+                    statusText.innerText = "Invalid or inactive UPI ID.";
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        }); */
+
+
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

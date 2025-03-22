@@ -42,8 +42,9 @@ INSTALLED_APPS = [
 
     # Custom apps
     'backend_apps.creds',
-    'backend_apps.payment',
+    'backend_apps.donate_once',
     'backend_apps.subscription',
+    "templates_app"
 ]
 
 
@@ -145,7 +146,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),  # Tells Django to look for static files here
+]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Change if needed
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class PaymentConfig(AppConfig):
+class DonateOnceConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'backend_apps.payment'
+    name = 'backend_apps.donate_once'
