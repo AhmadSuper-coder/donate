@@ -1,5 +1,8 @@
 asgiref==3.8.1
 Django==5.1.7
+django-filter==25.1
+djangorestframework==3.15.2
+Markdown==3.7
 psycopg2==2.9.10
 python-decouple==3.8
 sqlparse==0.5.3
