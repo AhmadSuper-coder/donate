@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Custom apps
-    'backend_apps.creds',
+    'backend_apps.central',
     'backend_apps.donate_once',
     'backend_apps.subscription',
     "templates_app"
@@ -97,6 +97,7 @@ WSGI_APPLICATION = 'donate.wsgi.application'
 # }
 
 
+# mysql, postgresql
 
 # for the postgres sql
 DATABASES = {
@@ -116,6 +117,18 @@ DATABASES = {
 # print("DATABASE_HOST:", config('DATABASE_HOST', default='localhost'))
 # print("DATABASE_PORT:", config('DATABASE_PORT', default='5432'))
 # print("SECRET_KEY:", config('SECRET_KEY', default='your_default_secret_key'))
+
+
+# PhonePe related credentials
+PHONEPE_TESTING_MERCHANT_ID = config('TESTING_MERCHANT_ID', default='default_testing_merchant_id')
+PHONEPE_TESTING_SALTKEY = config('TESTING_SALTKEY', default='default_testing_saltkey')
+PHONEPE_TESTING_SALTINDEX = config('TESTING_SALTINDEX', default='default_testing_saltindex')
+PHONEPE_TESTING_URL = config('TESTING_PHONPE_URL', default='https://test.phonepe.com/api')
+
+PHONEPE_PROD_MERCHANT_ID = config('PROD_MERCHANT_ID', default='default_prod_merchant_id')
+PHONEPE_PROD_SALTKEY = config('PROD_SALTKEY', default='default_prod_saltkey')
+PHONEPE_PROD_SALTINDEX = config('PROD_SALTINDEX', default='default_prod_saltindex')
+PHONEPE_PROD_URL = config('PROD_PHONPE_URL', default='https://prod.phonepe.com/api')
 
 
 # Password validation

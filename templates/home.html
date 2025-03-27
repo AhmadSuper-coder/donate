@@ -95,8 +95,7 @@
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="donate-once" role="tabpanel">
                         <form id="donation-form" action="/api/donate/" method="post">
-                            <input type="hidden" name="subscription_enabled" value="0">
-                            <input type="hidden" name="subscriptionFrequency" value="">
+                            {% csrf_token %}
                             <h5 class="mt-4">Donate & Get Benefit of 80G</h5>
                         <div class="row mb-3">
                             <div class="col-md-6">
