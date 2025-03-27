@@ -46,6 +46,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    #restframeworks
+    "rest_framework",
+
     # Custom apps
     'backend_apps.central',
     'backend_apps.donate_once',
