@@ -3,6 +3,10 @@ import json
 import hashlib
 import base64
 from django.conf import settings
+import time
+import random
+import time
+import random
 
 class PhonePeService:
 
@@ -17,6 +21,20 @@ class PhonePeService:
         if settings.PHONEPE_ENV == "PROD":
             return settings.PHONEPE_PROD_MERCHANT_ID
         return settings.PHONEPE_TESTING_MERCHANT_ID
+
+    @staticmethod
+    def generate_merchant_transaction_id():
+        """Generate a random 30-digit merchant transaction ID with epoch time"""
+        epoch_time = int(time.time() * 1000)  # Current epoch time in milliseconds
+        random_number = random.randint(10**(30 - len(str(epoch_time)) - 1), (10**(30 - len(str(epoch_time))) - 1))
+        return f"{epoch_time}{random_number}"
+
+    @staticmethod
+    def generate_merchant_user_id():
+        """Generate a random 30-digit merchant user ID with epoch time"""
+        epoch_time = int(time.time() * 1000)  # Current epoch time in milliseconds
+        random_number = random.randint(10**(30 - len(str(epoch_time)) - 1), (10**(30 - len(str(epoch_time))) - 1))
+        return f"{epoch_time}{random_number}"
 
     @staticmethod
     def get_salt_key():
