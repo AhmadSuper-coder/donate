@@ -134,6 +134,10 @@ PHONEPE_PROD_SALTINDEX = config('PROD_SALTINDEX', default='default_prod_saltinde
 PHONEPE_PROD_URL = config('PROD_PHONPE_URL', default='https://prod.phonepe.com/api')
 
 
+# this will enabkle the testing thing here 
+PHONEPE_ENV="TESTING"
+
+
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
