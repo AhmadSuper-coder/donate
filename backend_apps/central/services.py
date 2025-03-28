@@ -49,21 +49,7 @@ class PhonePeService:
         if settings.PHONEPE_ENV == "PROD":
             return settings.PHONEPE_PROD_SALTINDEX
         return settings.PHONEPE_TESTING_SALTINDEX
-
-    @staticmethod
-    def create_payload(amount, transaction_id, callback_url):
-        """Generate the payload for PhonePe payment"""
-        payload = {
-            "merchantId": PhonePeService.get_merchant_id(),
-            "transactionId": transaction_id,
-            "amount": int(amount * 100),  # Convert amount to paise
-            "callbackUrl": callback_url,
-            "mobileNumber": "9999999999",
-            "paymentInstrument": {
-                "type": "PAY_PAGE"
-            }
-        }
-        return json.dumps(payload)
+        
 
     @staticmethod
     def generate_checksum(payload):

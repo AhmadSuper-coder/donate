@@ -5,6 +5,7 @@ class DonateOnce(models.Model):
     STATUS_CHOICES = [
         ("Pending", "Pending"),
         ("Success", "Success"),
+        ("Failed", "Failed"),
     ]
 
     SITE_CHOICES = [
