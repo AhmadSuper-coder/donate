@@ -46,6 +46,7 @@ class DonateOnceView(View):
             redirect_url = request.build_absolute_uri('/donate-once/redirect/receipt/')
             callback_url = request.build_absolute_uri('/donate-once/callback/status')
             print(redirect_url, callback_url)
+            
             request_packet = {
                 "merchantId": PhonePeService.get_merchant_id(),
                 "merchantTransactionId": PhonePeService.generate_merchant_transaction_id(),
@@ -59,9 +60,42 @@ class DonateOnceView(View):
                     "type": "PAY_PAGE"
                 }
             }
+            # Convert the request packet to Base64
+            request_body = PhonePeService.create_request_body(request_packet)
+            headers = PhonePeService.generate_request_headers(endpoint, base64_payload)
 
-            # if not amount or not donor_name:
-            #     return JsonResponse({'error': 'Invalid data'}, status=400)`
+            print(request_body)
+            # Send the request to PhonePe
+            # Assuming you have a method to send the request to PhonePe
+            # response = PhonePeService.send_request_to_phonepe(base64_payload)
+            # For demonstration, let's assume the response is successful
+            # Simulate a successful response from PhonePe
+            response = {
+                "success": True,
+                "transactionId": PhonePeService.generate_merchant_transaction_id()
+            }
+            if response.get('success'):         
+                # Redirect to PhonePe payment page
+                transaction_id = response.get('transactionId')
+                return JsonResponse({
+                    'redirectUrl': f"{PhonePeService.get_base_url()}/v1/pay",
+                    'transactionId': transaction_id
+                }, status=200)
+            else:
+                return JsonResponse({'error': 'Payment initiation failed'}, status=500)
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing key: {str(e)}'}, status=400)
+        except ValueError as e:
+            return JsonResponse({'error': f'Invalid value: {str(e)}'}, status=400)
+        except TypeError as e:
+            return JsonResponse({'error': f'Invalid type: {str(e)}'}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+   
+            if not amount or not donor_name:
+                return JsonResponse({'error': 'Invalid data'}, status=400)
 
             # Process the donation logic here (e.g., save to database)
             print(amount, mobile, name, email, pan, state)

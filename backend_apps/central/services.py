@@ -119,3 +119,10 @@ class PhonePeService:
         data = payload + salt_key
         checksum = hashlib.sha256(data.encode()).hexdigest()
         return base64.b64encode(checksum.encode()).decode()
+
+
+    # from here will be mention all the url for the payment 
+    @staticmethod
+    def one_time_payment_url():
+        """Get the one-time payment URL for PhonePe"""
+        return f"{PhonePeService.get_base_url()}/pg/v1/pay"
