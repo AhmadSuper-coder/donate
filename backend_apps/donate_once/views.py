@@ -44,9 +44,9 @@ class DonateOnceView(View):
             # Define the redirect URL dynamically based on your application's domain or logic
 
             redirect_url = request.build_absolute_uri('/donate-once/redirect/receipt/')
-            callback_url = request.build_absolute_uri('/donate-once/callback/status')
-            print(redirect_url, callback_url)
-            
+            callback_url = request.build_absolute_uri('/donate-once/callback/status/')
+
+
             request_packet = {
                 "merchantId": PhonePeService.get_merchant_id(),
                 "merchantTransactionId": PhonePeService.generate_merchant_transaction_id(),
@@ -133,8 +133,8 @@ class CallbackStatusView(View):
         try:
 
             print("------------------->>>>>>>>>>> Callback Status Url is Comming ------------------------>>>>>>>>>>")
-
-            data = json.loads(request.body)  # Parse JSON payload
+            print(request)
+            data = json.loads(request.data)  # Parse JSON payload
             transaction_id = data.get('transactionId')
             status = data.get('status')
 

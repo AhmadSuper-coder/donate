@@ -1,0 +1,326 @@
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donation Receipt</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
+    <style>
+        body {
+            background: #f8f9fa;
+            font-family: 'Roboto', sans-serif;
+        }
+        .receipt-container {
+            background-color: #fff;
+            padding: 0 12px 0 12px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 850px;
+            margin: 50px auto;
+        }
+        .receipt-header {
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(to right, #993312, #FFC107);
+        }
+        .h-address {
+            font-size: 15px;
+            font-weight: 400px;
+        }
+        .receipt-title {
+            margin: 5px;
+            display: inline-block;
+            padding: 5px;
+            background: linear-gradient(to right, #993312, #FFC107);
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .receipt-section table {
+            margin:10px;
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            border: 1px solid grey;
+        }
+
+        .receipt-section th {
+            /* background: linear-gradient(to right, #993312, #FFC107); */
+            color: #fff;
+            background-color: #993312;
+        }
+        .receipt-section th, .receipt-section td {
+            border: 1px solid grey;
+        }
+
+        .receipt-label {
+            font-weight: bold;
+            color: #333;
+        }
+        .receipt-value {
+            color: #555;
+        }
+        .receipt-footer {
+            text-align: center;
+            margin-top: 10px;
+            color: #666;
+        }
+        .contact{
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            padding: 5px;
+            color: #fff;
+            background: linear-gradient(to right, #993312, #FFC107);
+
+        }
+        .auth-sign {
+            font-size: 13px;
+            color: #000;
+        }
+        .divider {
+            border-top: 1px solid #ccc;
+            margin: 5px 0;
+        }
+        .signature-section {
+            display: flex;
+            align-items: flex-end;
+        }
+        .thanks-note {
+            font-size: 14px;
+            padding: 5px;
+            border-radius: 10px;
+            background-color: #dfdfdf;
+            color: #000;
+            margin: 10px 0;
+        }
+        #printButton {
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="receipt-container">
+            <div class="receipt-header row">
+                <div class="col-md-2">
+                    <img src="img/logo.png" alt="Logo" width="100">
+                </div>
+                <div class="col-md-8">
+                    <h1>Angels Foundation</h1>
+                    <p class="h-address">Lets Empower Society<br/>
+                    <strong>Registration No: 547</strong><br/>
+                    M-1/74,Sec B, Aliganj Kapoorthala, Lucknow</p>
+                </div>
+                <div class="col-md-2">
+                    <img src="img/logo.png" alt="Logo" width="100">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-center h-grid">
+                    <h3 class="receipt-title">VISITOR DONATION RECEIPT</h3>
+                </div>
+            </div>
+            <div class="receipt-section">
+                <table width="100%">
+                    <tr>
+                        <th class="receipt-label">Receipt No</th>
+                        <th class="receipt-label">Amount</th>
+                        <th class="receipt-label">Transaction ID</th>
+                        <th class="receipt-label">Payment Status</th>
+                        <th class="receipt-label">Date</th>
+                    </tr>
+                    <tr>
+                        <td class="receipt-value"><?php echo htmlspecialchars($data['id']); ?></td>
+                        <td class="receipt-value">₹<?php echo htmlspecialchars($data['amount']); ?></td>
+                        <td class="receipt-value"><?php echo htmlspecialchars($data['transaction_id']); ?></td>
+                        <td class="receipt-value">Success</td>
+                        <td class="receipt-value"><?php echo date('d-m-Y',strtotime($data['registered_on'])); ?></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="receipt-section">
+                <table width="100%">
+                    <tr>
+                        <th class="receipt-label">Received From</th>
+                        <td class="receipt-value"><?php echo htmlspecialchars($db->decryptData($data['name'])); ?></td>
+                    </tr>
+                    <tr>
+                        <th class="receipt-label">Address</th>
+                        <td class="receipt-value"><?php echo htmlspecialchars($db->decryptData($data['state'])); ?></td>
+                    </tr>
+                    <tr>
+                        <th class="receipt-label">Rupees(In words)</th>
+                        <td class="receipt-value"><?php echo ucfirst(convertNumberToWords($data['amount'])); ?> Rupees</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="receipt-footer">
+                <div class="row signature-section">
+                    <div class="col-md-8">
+                        <h5>Thank you for your generous donation!</h5>
+                    </div>
+                    <div class="col-md-4">
+                        <img src="https://placehold.co/100x25" alt="Logo">
+                        <div class="divider"></div>
+                        <p class="auth-sign">Shashikant Srivastav (Director)<br/>
+                            Angels Foundation<br/>
+                            Aurthorized Signatory
+                        </p>
+                    </div>
+                </div>
+
+                <div class="thanks-note">
+                    Donations made to <strong>Angels Foundation</strong> are eligible for the benefit of 
+                        deduction under Section 80G of the Income Tax Act, 1961. Amount donated: ₹<?php echo htmlspecialchars($data['amount']); ?>. 
+                        Authorized by <strong>Angels Foundation</strong>.
+                    
+                </div>
+
+                <div class="row contact">
+                    <div class="col-md-4"><i class="fas fa-globe"></i> www.angelsfoundationindia.org</div>
+                    <div class="col-md-4"><i class="fas fa-envelope"></i> info@angelsfoundationindia.org</div>
+                    <div class="col-md-4"><i class="fas fa-phone"></i> +91-7905881802</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button id="printButton" class="btn btn-success"><i class="fas fa-print"></i> Print</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('printButton').addEventListener('click', function () {
+            const element = document.querySelector('.container');
+            html2pdf().from(element).save('receipt.pdf');
+        });
+    </script>
+
+</body>
+</html>
+<?php
+
+function convertNumberToWords($number) {
+    $hyphen      = '-';
+    $conjunction = ' and ';
+    $separator   = ', ';
+    $negative    = 'negative ';
+    $decimal     = ' point ';
+    $dictionary  = array(
+        0                   => 'zero',
+        1                   => 'one',
+        2                   => 'two',
+        3                   => 'three',
+        4                   => 'four',
+        5                   => 'five',
+        6                   => 'six',
+        7                   => 'seven',
+        8                   => 'eight',
+        9                   => 'nine',
+        10                  => 'ten',
+        11                  => 'eleven',
+        12                  => 'twelve',
+        13                  => 'thirteen',
+        14                  => 'fourteen',
+        15                  => 'fifteen',
+        16                  => 'sixteen',
+        17                  => 'seventeen',
+        18                  => 'eighteen',
+        19                  => 'nineteen',
+        20                  => 'twenty',
+        30                  => 'thirty',
+        40                  => 'forty',
+        50                  => 'fifty',
+        60                  => 'sixty',
+        70                  => 'seventy',
+        80                  => 'eighty',
+        90                  => 'ninety',
+        100                 => 'hundred',
+        1000                => 'thousand',
+        1000000             => 'million',
+        1000000000          => 'billion',
+        1000000000000       => 'trillion',
+        1000000000000000    => 'quadrillion',
+        1000000000000000000 => 'quintillion'
+    );
+
+    if (!is_numeric($number)) {
+        return false;
+    }
+
+    if (($number >= 0 && (int) $number < 0) || (int) $number < 0 - PHP_INT_MAX) {
+        // overflow
+        trigger_error(
+            'convertNumberToWords only accepts numbers between -' . PHP_INT_MAX . ' and ' . PHP_INT_MAX,
+            E_USER_WARNING
+        );
+        return false;
+    }
+
+    if ($number < 0) {
+        return $negative . convertNumberToWords(abs($number));
+    }
+
+    $string = $fraction = null;
+
+    if (strpos($number, '.') !== false) {
+        list($number, $fraction) = explode('.', $number);
+    }
+
+    switch (true) {
+        case $number < 21:
+            $string = $dictionary[$number];
+            break;
+        case $number < 100:
+            $tens   = ((int) ($number / 10)) * 10;
+            $units  = $number % 10;
+            $string = $dictionary[$tens];
+            if ($units) {
+                $string .= $hyphen . $dictionary[$units];
+            }
+            break;
+        case $number < 1000:
+            $hundreds  = $number / 100;
+            $remainder = $number % 100;
+            $string = $dictionary[$hundreds] . ' ' . $dictionary[100];
+            if ($remainder) {
+                $string .= $conjunction . convertNumberToWords($remainder);
+            }
+            break;
+        default:
+            $baseUnit = pow(1000, floor(log($number, 1000)));
+            $numBaseUnits = (int) ($number / $baseUnit);
+            $remainder = $number % $baseUnit;
+            $string = convertNumberToWords($numBaseUnits) . ' ' . $dictionary[$baseUnit];
+            if ($remainder) {
+                $string .= $remainder < 100 ? $conjunction : $separator;
+                $string .= convertNumberToWords($remainder);
+            }
+            break;
+    }
+
+    if (null !== $fraction && is_numeric($fraction)) {
+        $string .= $decimal;
+        $words = array();
+        foreach (str_split((string) $fraction) as $number) {
+            $words[] = $dictionary[$number];
+        }
+        $string .= implode(' ', $words);
+    }
+
+    return $string;
+}
+
+?>
