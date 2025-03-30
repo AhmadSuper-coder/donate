@@ -8,6 +8,10 @@ from backend_apps.central.services import PhonePeService
 from backend_apps.donate_once.models import DonateOnce
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from backend_apps.central import constants as PhonePeConstants
+import requests  # Ensure requests is used for HTTP requests
+from django.utils.timezone import now
+
 
 class DonateOnceView(View):
     def get(self, request):
@@ -27,30 +31,35 @@ class DonateOnceView(View):
             email = request.POST.get('email')
             pan = request.POST.get('pan')
             state = request.POST.get('state')
+            merchant_txn_id= PhonePeService.generate_merchant_transaction_id()
+            merchant_user_id= PhonePeService.generate_merchant_user_id()
 
+
+            # Generate the redirect and callback URLs
+            # These URLs should point to your application's endpoints that handle the response from PhonePe
+            # and the callback from PhonePe.
             # Create a new donation entry in the database with status as 'pending'
             donation = DonateOnce.objects.create(
                 amount=amount,
-                mobile=mobile,
+                mobile_number=mobile,
                 name=name,
                 email=email,
-                pan=pan,
+                pan_number=pan,
                 state=state,
-                status='pending'  # Assuming 'status' is a field in the Donation model
+                status='pending',  # Assuming 'status' is a field in the Donation model
+                merchant_transaction_id=merchant_txn_id,
+                merchant_user_id=merchant_user_id
             )
-            # Prepare the request packet for PhonePe
-            # Assuming you have a method to get the merchant ID and other details
-            # Generate the request packet for PhonePe
-            # Define the redirect URL dynamically based on your application's domain or logic
 
-            redirect_url = request.build_absolute_uri('/donate-once/redirect/receipt/')
+            # Generate the redirect URL with the donation ID
+            redirect_url = request.build_absolute_uri(f'/donate-once/redirect/receipt/{donation.id}')
             callback_url = request.build_absolute_uri('/donate-once/callback/status/')
 
 
             request_packet = {
                 "merchantId": PhonePeService.get_merchant_id(),
-                "merchantTransactionId": PhonePeService.generate_merchant_transaction_id(),
-                "merchantUserId": PhonePeService.generate_merchant_user_id(),
+                "merchantTransactionId": merchant_txn_id ,
+                "merchantUserId":merchant_txn_id,
                 "amount": int(amount) * 100,  # Assuming amount is in rupees, converting to paise
                 "redirectUrl": redirect_url,
                 "redirectMode": "REDIRECT",
@@ -60,29 +69,42 @@ class DonateOnceView(View):
                     "type": "PAY_PAGE"
                 }
             }
-            # Convert the request packet to Base64
-            request_body = PhonePeService.create_request_body(request_packet)
-            headers = PhonePeService.generate_request_headers(endpoint, base64_payload)
 
-            print(request_body)
+
+            # Generate the request body, headers and phonepe URL
+            request_body = PhonePeService.create_request_body(request_packet)
+            headers = PhonePeService.generate_request_headers(PhonePeConstants.ph_one_time_payment_end_point, request_packet)
+            phonepe_url = PhonePeService.get_phonepe_url(PhonePeConstants.ph_one_time_payment_end_point)
+
+            # print(f"Request Body: {request_body}")
+            # print(f"Headers: {headers}")
+            # print(f"PhonePe URL: {phonepe_url}")
+
             # Send the request to PhonePe
-            # Assuming you have a method to send the request to PhonePe
-            # response = PhonePeService.send_request_to_phonepe(base64_payload)
-            # For demonstration, let's assume the response is successful
-            # Simulate a successful response from PhonePe
-            response = {
-                "success": True,
-                "transactionId": PhonePeService.generate_merchant_transaction_id()
-            }
-            if response.get('success'):         
-                # Redirect to PhonePe payment page
-                transaction_id = response.get('transactionId')
-                return JsonResponse({
-                    'redirectUrl': f"{PhonePeService.get_base_url()}/v1/pay",
-                    'transactionId': transaction_id
-                }, status=200)
+            response = requests.post(phonepe_url, headers=headers, json=request_body)
+
+            # Check the response from PhonePe
+            if response.status_code == 200:
+                response_data = response.json()
+                if response_data.get('success'):
+                    # Handle successful response
+                    redirect_info = response_data.get('data', {}).get('instrumentResponse', {}).get('redirectInfo', {})
+                    payment_url = redirect_info.get('url')
+                    if payment_url:
+                        return redirect(payment_url)
+                    if payment_url:
+                        return JsonResponse({'redirectUrl': payment_url}, status=200)
+                    else:
+                        return JsonResponse({'error': 'Redirect URL not found in response'}, status=500)
+                else:
+                    # Handle failure response
+                    return JsonResponse({'error': 'Payment initiation failed', 'details': response_data}, status=500)
             else:
-                return JsonResponse({'error': 'Payment initiation failed'}, status=500)
+                print(f"Error: {response.status_code}, Response: {response.text}")
+                # Handle HTTP error response
+                return JsonResponse({'error': 'Failed to connect to PhonePe', 'status_code': response.status_code}, status=500)
+            
+
         except KeyError as e:
             return JsonResponse({'error': f'Missing key: {str(e)}'}, status=400)
         except ValueError as e:
@@ -94,12 +116,6 @@ class DonateOnceView(View):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
    
-            if not amount or not donor_name:
-                return JsonResponse({'error': 'Invalid data'}, status=400)
-
-            # Process the donation logic here (e.g., save to database)
-            print(amount, mobile, name, email, pan, state)
-            return JsonResponse({'message': 'Donation successful'}, status=200)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
@@ -112,15 +128,57 @@ class RedirectReceiptView(View):
     Displays the receipt.
     """
     def get(self, request, *args, **kwargs):
-        status = request.GET.get('status', 'unknown')
-        transaction_id = request.GET.get('transactionId', '')
-        print("------------------->>>>>>>>>>>. Redirection Url is Comming ------------------------>>>>>>>>>>")
-        
-        # Render receipt with transaction details
-        return render(request, 'donation/receipt.html', {
-            'status': status,
-            'transaction_id': transaction_id
-        })
+        try:
+            donation_id = kwargs.get('id')
+            merchant_id= PhonePeService.get_merchant_id()
+            try:
+                donation = DonateOnce.objects.get(id=donation_id)
+                data = {
+                "id": donation.id,
+                "amount": donation.amount,
+                "transaction_id": donation.merchant_transaction_id,
+                "registered_on": donation.created_on,
+                "name": donation.name,
+                "state": donation.state
+                }
+                
+            except DonateOnce.DoesNotExist:
+                return JsonResponse({'error': 'Donation not found'}, status=404)
+            
+            # Generate the PhonePe status endpoint            
+            phonepe_status_endpoint = f"{PhonePeConstants.ph_one_time_status_end_point}/{merchant_id}/{donation.merchant_transaction_id}"
+            phonepe_status_url = PhonePeService.get_phonepe_url(phonepe_status_endpoint)
+            headers = PhonePeService.generate_request_headers(phonepe_status_endpoint, merchant_id=merchant_id)
+
+            print("---------------------------------------------------")
+            print(headers)
+            print(phonepe_status_url)
+
+            # Send the request to PhonePe
+            response = requests.get(phonepe_status_url, headers=headers, json={})
+            if response.status_code == 200:
+                response_data = response.json()
+                print("Response Data:", response_data)
+                # You can now access the response data as a dictionary
+                # For example, to get a specific field:
+                # status = response_data.get('status')
+            else:
+                print(f"Error: {response.status_code}, Response: {response.text}")
+            print(response)
+    
+            return render(request, 'receipt.html', {"data": data})
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing key: {str(e)}'}, status=400)
+        except ValueError as e:
+            return JsonResponse({'error': f'Invalid value: {str(e)}'}, status=400)
+        except TypeError as e:
+            return JsonResponse({'error': f'Invalid type: {str(e)}'}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+  
+ 
 
 
 # Ensure CSRF exemption for the callback view

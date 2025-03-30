@@ -22,8 +22,10 @@ class DonateOnce(models.Model):
     pan_number = models.CharField(max_length=10, blank=True, null=True)
     state = models.CharField(max_length=100)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="Pending")
+    merchant_transaction_id = models.CharField(max_length=255, blank=True, null=True)
+    merchant_user_id = models.CharField(max_length=255, blank=True, null=True)
 
-    created_on = models.DateTimeField(auto_now_add=True)  # Set on creation
+    created_on = models.DateTimeField(auto_now_add=True, blank=True, null=True)  # Set on creation
     updated_on = models.DateTimeField(auto_now=True)  # Updates on each save
 
 

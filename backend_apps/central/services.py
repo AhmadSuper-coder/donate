@@ -7,6 +7,7 @@ import time
 import random
 import time
 import random
+from . import constants as PhonePeConstants
 
 class PhonePeService:
 
@@ -75,20 +76,48 @@ class PhonePeService:
 
 
     @staticmethod
-    def generate_request_headers(endpoint, payload):
-        # Convert payload to Base64
-        base64_payload = PhonePeService.generate_payload_to_base64(payload)
+    def generate_request_headers(endpoint, payload=None, merchant_id=None):
+        """
+        Generate request headers for PhonePe API.
+
+        Args:
+            endpoint (str): The API endpoint.
+            payload (dict, optional): The payload to be sent in the request. Defaults to None.
+            merchant_id (str, optional): The merchant ID to include in the headers. Defaults to None.
+
+        Returns:
+            dict: A dictionary containing the request headers.
+        """
+        # If payload is not provided, use an empty string for Base64 encoding
+        base64_payload = PhonePeService.generate_payload_to_base64(payload) if payload else ""
 
         # Calculate X-Verify Header
         salt_key = PhonePeService.get_salt_key()
         salt_index = PhonePeService.get_salt_index()
-        checksum_data = f"{base64_payload}{endpoint}{salt_key}"
+
+        if payload:
+            checksum_data = f"{base64_payload}{endpoint}{salt_key}"
+        else:
+            print("Payload is None, using empty string for checksum calculation.")
+            print(endpoint)
+            checksum_data = f"{endpoint}{salt_key}"
+
         x_verify = hashlib.sha256(checksum_data.encode()).hexdigest() + "###" + salt_index
-        
-        return {
+
+        headers = {
             "Content-Type": "application/json",
             "X-VERIFY": x_verify
         }
+
+
+        # Optionally include X-MERCHANT-ID if provided
+        if merchant_id:
+            headers["X-MERCHANT-ID"] = merchant_id
+
+        print(endpoint, headers)
+        
+
+        return headers
 
     @staticmethod
     def generate_merchant_user_id():
@@ -119,13 +148,20 @@ class PhonePeService:
         data = payload + salt_key
         checksum = hashlib.sha256(data.encode()).hexdigest()
         return base64.b64encode(checksum.encode()).decode()
+    
 
-
-    # from here will be mention all the url for the payment 
     @staticmethod
-    def one_time_payment_url():
-        """Get the one-time payment URL for PhonePe"""
-        return f"{PhonePeService.get_base_url()}/pg/v1/pay"
+    def get_phonepe_url(endpoint):
+        """
+        Get the payment URL for PhonePe.
+        
+        Args:
+        endpoint (str): The endpoint to be appended to the base URL.
+        
+        Returns:
+        str: The complete payment URL.
+        """
+        return f"{PhonePeService.get_base_url()}{endpoint}"
 
 
         
