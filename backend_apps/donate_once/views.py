@@ -5,7 +5,7 @@ import json
 from django.views import View
 from django.shortcuts import render, redirect
 from backend_apps.central.services import PhonePeService
-from backend_apps.donate_once.models import DonateOnce
+from backend_apps.donate_once.models import DonateOnce, DonateOnceLog
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from backend_apps.central import constants as PhonePeConstants
@@ -89,6 +89,11 @@ class DonateOnceView(View):
             # Check the response from PhonePe
             if response.status_code == 200:
                 response_data = response.json()
+                DonateOnceLog.create_or_update(
+                    donate_once_id=donation.id,
+                    field_name='donate_once_response',
+                    data=response_data
+                )
                 if response_data.get('success'):
                     # Handle successful response
                     redirect_info = response_data.get('data', {}).get('instrumentResponse', {}).get('redirectInfo', {})
@@ -103,6 +108,12 @@ class DonateOnceView(View):
                     # Handle failure response
                     return JsonResponse({'error': 'Payment initiation failed', 'details': response_data}, status=500)
             else:
+                response_data = response.json()
+                DonateOnceLog.create_or_update(
+                    donate_once_id=donation.id,
+                    field_name='donate_once_response',
+                    data=response_data
+                )
                 print(f"Error: {response.status_code}, Response: {response.text}")
                 # Handle HTTP error response
                 return JsonResponse({'error': 'Failed to connect to PhonePe', 'status_code': response.status_code}, status=500)
@@ -162,6 +173,11 @@ class RedirectReceiptView(View):
 
             if response.status_code == 200:
                 response_data = response.json()
+                DonateOnceLog.create_or_update(
+                    donate_once_id=donation.id,
+                    field_name='status_api_response',
+                    data=response_data
+                )
                 if response_data.get('success') and response_data.get('code') == 'PAYMENT_SUCCESS':
                     return render(request, 'receipt.html', {"data": data})
                 elif response_data.get('success') and response_data.get('code') == 'PAYMENT_PENDING':
@@ -189,17 +205,36 @@ class RedirectReceiptView(View):
                     )
 
                     cancel_response_data = cancel_response.json()
+                    DonateOnceLog.create_or_update(
+                    donate_once_id=donation.id,
+                    field_name='cancelation_api_response',
+                    data=cancel_response_data
+                    )
                     if cancel_response_data.get('code') == 'PAYMENT_ALREADY_COMPLETED':
                         return render(request, 'receipt.html', {"data": data})
                     else:
                         return render(request, 'payment_failed.html', {"data": data})
             else:
+                # logging the error response
+                response_data = response.json()
+                DonateOnceLog.create_or_update(
+                    donate_once_id=donation.id,
+                    field_name='status_api_response',
+                    data=response_data
+                )
+
                 cancel_response = PhonePeService.cancel_transaction(
                     merchant_id=merchant_id,
                     donation=donation
                 )
 
                 cancel_response_data = cancel_response.json()
+                DonateOnceLog.create_or_update(
+                    donate_once_id=donation.id,
+                    field_name='cancelation_api_response',
+                    data=cancel_response_data
+                )
+
                 if cancel_response_data.get('code') == 'PAYMENT_ALREADY_COMPLETED':
                     return render(request, 'receipt.html', {"data": data})
                 else:
@@ -213,11 +248,15 @@ class RedirectReceiptView(View):
             )
 
             cancel_response_data = cancel_response.json()
+            DonateOnceLog.create_or_update(
+                    donate_once_id=donation.id,
+                    field_name='cancelation_api_response',
+                    data=cancel_response_data
+                )
 
             if cancel_response_data.get('code') == 'PAYMENT_ALREADY_COMPLETED':
                 return render(request, 'receipt.html', {"data": data})
             else:
-                print("--------------------------------------------------------------------->>>>>>>>>>>")
                 return render(request, 'payment_failed.html', {"data": data})
                 
     
