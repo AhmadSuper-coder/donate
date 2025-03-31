@@ -12,6 +12,8 @@ from backend_apps.central import constants as PhonePeConstants
 import requests  # Ensure requests is used for HTTP requests
 from django.utils.timezone import now
 import time
+from datetime import timedelta
+
 
 
 class DonateOnceView(View):
@@ -151,42 +153,74 @@ class RedirectReceiptView(View):
             if donation.call_back_status:
                 return render(request, 'receipt.html', {"data": data})
 
-            
+
             # Generate the PhonePe status endpoint    
             response = PhonePeService.check_transaction_status(
                 merchant_id=merchant_id,
                 donation= donation
             )
 
-
             if response.status_code == 200:
                 response_data = response.json()
                 if response_data.get('success') and response_data.get('code') == 'PAYMENT_SUCCESS':
                     return render(request, 'receipt.html', {"data": data})
                 elif response_data.get('success') and response_data.get('code') == 'PAYMENT_PENDING':
-                    # Wait for 20-25 seconds before the first status check
-                    time.sleep(15)
                     
                     # Check status every 3 seconds for the next 30 seconds
-                    for _ in range(10):  # 10 iterations of 3 seconds each
+                    for t in range(5):  # 5 iterations of 3 seconds each
                         status_response = PhonePeService.check_transaction_status(
                             merchant_id=merchant_id,
                             donation=donation
                         )
-                        if status_response.get('success') and status_response.get('code') == 'PAYMENT_SUCCESS':
+                
+                        status_response_data = status_response.json()
+                        print("status_response_data", status_response_data)
+                        if status_response_data.get('success') and status_response_data.get('code') == 'PAYMENT_SUCCESS':
                             return render(request, 'receipt.html', {"data": data})
-                        elif status_response.get('success') and status_response.get('code') == 'PAYMENT_FAILED':
-                            data['status'] = 'Payment Failed'
+                        elif status_response_data.get('success') and status_response_data.get('code') == 'PAYMENT_FAILED':
                             break
                         time.sleep(3)
-                    else:
-                        data['status'] = 'Payment Pending'
+   
                 else:
-                    data['status'] = 'Payment Failed'
+                    # If not success or pending, then payment is failed
+                    cancel_response =PhonePeService.cancel_transaction(
+                        merchant_id=merchant_id,
+                        donation=donation
+                    )
+
+                    cancel_response_data = cancel_response.json()
+                    if cancel_response_data.get('code') == 'PAYMENT_ALREADY_COMPLETED':
+                        return render(request, 'receipt.html', {"data": data})
+                    else:
+                        return render(request, 'payment_failed.html', {"data": data})
             else:
-                print(f"Error: {response.status_code}, Response: {response.text}")
+                cancel_response = PhonePeService.cancel_transaction(
+                    merchant_id=merchant_id,
+                    donation=donation
+                )
+
+                cancel_response_data = cancel_response.json()
+                if cancel_response_data.get('code') == 'PAYMENT_ALREADY_COMPLETED':
+                    return render(request, 'receipt.html', {"data": data})
+                else:
+                    return render(request, 'payment_failed.html', {"data": data})
+
+
+            
+            cancel_response = PhonePeService.cancel_transaction(
+                merchant_id=merchant_id,
+                donation=donation
+            )
+
+            cancel_response_data = cancel_response.json()
+
+            if cancel_response_data.get('code') == 'PAYMENT_ALREADY_COMPLETED':
+                return render(request, 'receipt.html', {"data": data})
+            else:
+                print("--------------------------------------------------------------------->>>>>>>>>>>")
+                return render(request, 'payment_failed.html', {"data": data})
+                
     
-            return render(request, 'receipt.html', {"data": data})
         except KeyError as e:
             return JsonResponse({'error': f'Missing key: {str(e)}'}, status=400)
         except ValueError as e:
@@ -228,3 +262,29 @@ class CallbackStatusView(View):
 
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
+        
+
+
+
+# Ensure CSRF exemption for the callback view
+@method_decorator(csrf_exempt, name='dispatch')  # Exempt CSRF for callback
+class CallbackCancelsView(View):
+    """
+    Handles the callback from PhonePe and updates the donation status.
+    """
+    def post(self, request, *args, **kwargs):
+        try:
+
+            print("------------------->>>>>>>>>>> Callback Cancelation Url is Comming ------------------------>>>>>>>>>>")
+            print(request)
+            data = json.loads(request.data)  # Parse JSON payload
+        
+
+            return JsonResponse({'message': 'Callback processed successfully'}, status=200)
+
+        except DonateOnce.DoesNotExist:
+            return JsonResponse({'error': 'Donation not found'}, status=404)
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+        

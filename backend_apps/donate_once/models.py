@@ -31,3 +31,25 @@ class DonateOnce(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.amount} - {self.status}"
+    
+
+
+
+class DonateOnceLog(models.Model):
+    donate_once_response = models.JSONField(default=dict)
+    callback_response = models.JSONField(default=dict)
+    status_api_response = models.JSONField(default=dict)
+    cancelation_api_response = models.JSONField(default=dict)
+    created_on = models.DateTimeField(auto_now_add=True, blank=True, null=True)  # Set on creation
+    updated_on = models.DateTimeField(auto_now=True)  # Updates on each save
+
+    def append_to_field(self, field_name, data):
+        if field_name in ['donate_once_response', 'callback_response', 'status_api_response', 'cancelation_api_response']:
+            field_data = getattr(self, field_name, {})
+            if isinstance(field_data, dict):
+                field_data.update(data)
+                setattr(self, field_name, field_data)
+                self.save()
+
+    def __str__(self):
+        return f"Log created on {self.created_on}"

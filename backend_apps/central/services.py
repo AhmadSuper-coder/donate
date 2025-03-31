@@ -76,7 +76,7 @@ class PhonePeService:
 
 
     @staticmethod
-    def generate_request_headers(endpoint, payload=None, merchant_id=None):
+    def generate_request_headers(endpoint, payload=None, merchant_id=None, callback_url=None):
         """
         Generate request headers for PhonePe API.
 
@@ -84,6 +84,7 @@ class PhonePeService:
             endpoint (str): The API endpoint.
             payload (dict, optional): The payload to be sent in the request. Defaults to None.
             merchant_id (str, optional): The merchant ID to include in the headers. Defaults to None.
+            callback_url (str, optional): The callback URL to include in the headers if provided. Defaults to None.
 
         Returns:
             dict: A dictionary containing the request headers.
@@ -109,13 +110,15 @@ class PhonePeService:
             "X-VERIFY": x_verify
         }
 
-
         # Optionally include X-MERCHANT-ID if provided
         if merchant_id:
             headers["X-MERCHANT-ID"] = merchant_id
 
+        # Optionally include X-CALLBACK-URL if provided
+        if callback_url:
+            headers["X-CALLBACK-URL"] = callback_url
+
         print(endpoint, headers)
-        
 
         return headers
 
@@ -186,11 +189,45 @@ class PhonePeService:
         headers = PhonePeService.generate_request_headers(phonepe_status_endpoint, merchant_id=merchant_id)
 
         # Log the headers and URL for debugging
-        print("---------------------------------------------------")
-        print(headers)
-        print(phonepe_status_url)
+        # print(headers)
+        # print(phonepe_status_url)
 
         # Send the GET request to PhonePe
         response = requests.get(phonepe_status_url, headers=headers, json={})
+
+        return response
+    
+
+
+
+    @staticmethod
+    def cancel_transaction(merchant_id, donation):
+        """
+        Cancel the transaction for a given merchant ID and donation.
+
+        Args:
+            merchant_id (str): The merchant ID.
+            donation (object): The donation object containing transaction details.
+
+        Returns:
+            requests.Response: The response object from the PhonePe API.
+        """
+        # Define the callback URL
+        xcallbackurl = PhonePeService.get_phonepe_url("donate-once/callback/cancel/")
+
+        # Construct the endpoint and URL
+        phonepe_cancelation_endpoint = f"{PhonePeConstants.ph_one_time_cancel_end_point}/{merchant_id}/{donation.merchant_transaction_id}/cancel"
+        phonepe_cancelation_url = PhonePeService.get_phonepe_url(phonepe_cancelation_endpoint)
+
+        # Generate headers
+        headers = PhonePeService.generate_request_headers(phonepe_cancelation_url, callback_url=xcallbackurl)
+
+        # Log the headers and URL for debugging
+        print("---------------------------------------------------")
+        print(headers)
+        print(phonepe_cancelation_url)
+
+        # Send the POST request to PhonePe
+        response = requests.post(phonepe_cancelation_url, headers=headers, json={})
 
         return response
