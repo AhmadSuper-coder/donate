@@ -145,17 +145,18 @@ class RedirectReceiptView(View):
             except DonateOnce.DoesNotExist:
                 return JsonResponse({'error': 'Donation not found'}, status=404)
             
-            # Generate the PhonePe status endpoint            
-            phonepe_status_endpoint = f"{PhonePeConstants.ph_one_time_status_end_point}/{merchant_id}/{donation.merchant_transaction_id}"
-            phonepe_status_url = PhonePeService.get_phonepe_url(phonepe_status_endpoint)
-            headers = PhonePeService.generate_request_headers(phonepe_status_endpoint, merchant_id=merchant_id)
 
-            print("---------------------------------------------------")
-            print(headers)
-            print(phonepe_status_url)
+            # if callback is present then transaction is successfullsuccess
+            if donation.call_back_status:
+                return render(request, 'receipt.html', {"data": data})
 
-            # Send the request to PhonePe
-            response = requests.get(phonepe_status_url, headers=headers, json={})
+            
+            # Generate the PhonePe status endpoint    
+            response = PhonePeService.check_transaction_status(
+                merchant_id=merchant_id,
+                merchant_transaction_id=donation.merchant_transaction_id
+            )
+            
             if response.status_code == 200:
                 response_data = response.json()
                 print("Response Data:", response_data)

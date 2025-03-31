@@ -162,6 +162,35 @@ class PhonePeService:
         str: The complete payment URL.
         """
         return f"{PhonePeService.get_base_url()}{endpoint}"
+    
 
 
-        
+
+    @staticmethod
+    def check_transaction_status(merchant_id, donation):
+        """
+        Check the transaction status for a given merchant ID and donation.
+
+        Args:
+            merchant_id (str): The merchant ID.
+            donation (object): The donation object containing transaction details.
+
+        Returns:
+            requests.Response: The response object from the PhonePe API.
+        """
+        # Construct the endpoint and URL
+        phonepe_status_endpoint = f"{PhonePeConstants.ph_one_time_status_end_point}/{merchant_id}/{donation.merchant_transaction_id}"
+        phonepe_status_url = PhonePeService.get_phonepe_url(phonepe_status_endpoint)
+
+        # Generate headers
+        headers = PhonePeService.generate_request_headers(phonepe_status_endpoint, merchant_id=merchant_id)
+
+        # Log the headers and URL for debugging
+        print("---------------------------------------------------")
+        print(headers)
+        print(phonepe_status_url)
+
+        # Send the GET request to PhonePe
+        response = requests.get(phonepe_status_url, headers=headers, json={})
+
+        return response
