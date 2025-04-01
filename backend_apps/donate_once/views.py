@@ -248,6 +248,7 @@ class RedirectReceiptView(View):
             )
 
             cancel_response_data = cancel_response.json()
+            print("Cancelation api is being hit from here")
             DonateOnceLog.create_or_update(
                     donate_once_id=donation.id,
                     field_name='cancelation_api_response',

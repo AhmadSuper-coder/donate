@@ -100,7 +100,7 @@ class PhonePeService:
             checksum_data = f"{base64_payload}{endpoint}{salt_key}"
         else:
             print("Payload is None, using empty string for checksum calculation.")
-            print(endpoint)
+            print(endpoint, "geeeeeeeeeeeeeeeeeeeennnnnnnnnnnnnnnnerrrrrrrrrriiiiiiiiiiing Headeeeeeeeeerrr")
             checksum_data = f"{endpoint}{salt_key}"
 
         x_verify = hashlib.sha256(checksum_data.encode()).hexdigest() + "###" + salt_index
@@ -220,12 +220,14 @@ class PhonePeService:
         phonepe_cancelation_url = PhonePeService.get_phonepe_url(phonepe_cancelation_endpoint)
 
         # Generate headers
-        headers = PhonePeService.generate_request_headers(phonepe_cancelation_url, callback_url=xcallbackurl)
+        headers = PhonePeService.generate_request_headers(phonepe_cancelation_endpoint, callback_url=xcallbackurl)
 
         # Log the headers and URL for debugging
-        print("---------------------------------------------------")
+        print("*************************************************************************")
         print(headers)
         print(phonepe_cancelation_url)
+        print(phonepe_cancelation_endpoint)
+        print("*************************************************************************")
 
         # Send the POST request to PhonePe
         response = requests.post(phonepe_cancelation_url, headers=headers, json={})
