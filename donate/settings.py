@@ -136,7 +136,8 @@ PHONEPE_PROD_URL = config('PROD_PHONPE_URL', default='https://prod.phonepe.com/a
 
 
 # this will enabkle the testing thing here 
-PHONEPE_ENV="TESTING"
+
+PHONEPE_ENV = config('PHONEPE_ENV', default='TESTING')
 
 
 # Password validation
