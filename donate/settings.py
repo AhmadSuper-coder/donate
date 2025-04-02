@@ -112,6 +112,9 @@ DATABASES = {
         'PASSWORD': config('DATABASE_PASSWORD', default='your_secure_password'),
         'HOST': config('DATABASE_HOST', default='localhost'),
         'PORT': config('DATABASE_PORT', default='5432'),
+        'OPTIONS': {
+            'init_command': "SET SESSION sql_mode='STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION'"
+        }
     }
 }
 
