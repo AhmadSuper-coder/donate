@@ -8,13 +8,13 @@ class DonateOnce(models.Model):
         ("Failed", "Failed"),
     ]
 
-    SITE_CHOICES = [
-        ("x.com", "x.com"),
-        ("y.com", "y.com"),
-    ]
+    # SITE_CHOICES = [
+    #     ("x.com", "x.com"),
+    #     ("y.com", "y.com"),
+    # ]
 
 
-    site = models.CharField(max_length=10, choices=SITE_CHOICES, default="x.com")
+    # site = models.CharField(max_length=10, choices=SITE_CHOICES, default="x.com")
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     mobile_number = models.CharField(max_length=10)
     name = models.CharField(max_length=255)
