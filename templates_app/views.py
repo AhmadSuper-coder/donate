@@ -8,5 +8,4 @@ def home(request):
 
 
 def microservice_view(request):
-    data = {"message": "Microservice is working!"}
-    return JsonResponse(data)
+    return render(request, 'policies.html')

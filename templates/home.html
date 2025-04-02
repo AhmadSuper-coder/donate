@@ -184,8 +184,8 @@
 
 <!--                     ############ We will do testing with weekly okay ############ -->
                     <div class="tab-pane fade" id="weekly" role="tabpanel">
-                        <form action="create_sub.php" method="post">
-                            <input type="hidden" name="subscription_enabled" value="1">
+                        <form action="/subscription/create/" method="post">
+                            {% csrf_token %}
                             <input type="hidden" name="subscriptionFrequency" value="WEEKLY">
                             <h5 class="mt-4">Donate & Get Benefit of 80G</h5>
                         <div class="row mb-3">
@@ -267,14 +267,14 @@
                         </div>
 
                         <!-- ✅ Adding the UPI ID Input Field Here -->
-                        <div class="row mb-3">
+                        <!-- <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="upi_id" class="form-label">UPI ID *</label>
                                 <input type="text" class="form-control" id="upi_id" name="upi_id" placeholder="Enter UPI ID" required pattern="^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$">
                                 <div class="invalid-feedback">Please enter a valid UPI ID (e.g., username@upi).</div>
                                 <small id="upi_status" style="display:none;"></small>
                             </div>
-                        </div>
+                        </div> -->
                         <!-- ✅ End of UPI ID Field -->
 
                         <div class="text-center">
@@ -289,7 +289,8 @@
 
 <!--                    * ##################3 mothy start from here -->
                     <div class="tab-pane fade" id="monthly" role="tabpanel">
-                        <form action="save.php" method="post">
+                        <form action="/subscription/create/" method="post">
+                            {% csrf_token %}
                             <input type="hidden" name="subscription_enabled" value="1">
                             <input type="hidden" name="subscriptionFrequency" value="MONTHLY">
 
@@ -378,8 +379,8 @@
                         </form>
                     </div>
                     <div class="tab-pane fade" id="quarterly" role="tabpanel">
-                        <form action="save.php" method="post">
-                            <input type="hidden" name="subscription_enabled" value="1">
+                        <form action="/subscription/create/" method="post">
+                            {% csrf_token %}
                             <input type="hidden" name="subscriptionFrequency" value="QUARTERLY">
                             <h5 class="mt-4">Donate & Get Benefit of 80G</h5>
                         <div class="row mb-3">
@@ -465,8 +466,8 @@
                         </form>
                     </div>
                     <div class="tab-pane fade" id="yearly" role="tabpanel">
-                        <form action="save.php" method="post">
-                            <input type="hidden" name="subscription_enabled" value="1">
+                        <form action="/subscription/create/" method="post">
+                            {% csrf_token %}
                             <input type="hidden" name="subscriptionFrequency" value="YEARLY">
                             <h5 class="mt-4">Donate & Get Benefit of 80G</h5>
                         <div class="row mb-3">

@@ -106,7 +106,7 @@ WSGI_APPLICATION = 'donate.wsgi.application'
 # for the postgres sql
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': config('DATABASE_NAME', default='donate_db'),
         'USER': config('DATABASE_USER', default='donate_user'),
         'PASSWORD': config('DATABASE_PASSWORD', default='your_secure_password'),

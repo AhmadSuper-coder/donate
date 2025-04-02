@@ -22,5 +22,5 @@ urlpatterns = [
     path('', include('templates_app.urls')),  # Include template app URLs
     path('', include('templates_app.urls')),  # Include template app URLs
     path("", include("backend_apps.donate_once.urls")),  # Include donate_once app URLs
-    path("", include("backend_apps.subscription.urls")),  # Include subscription app URLs
+    path("subscription/", include("backend_apps.subscription.urls")),  # Include subscription app URLs
 ]
