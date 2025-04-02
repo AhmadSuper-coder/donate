@@ -7,7 +7,7 @@ from .models import Subscription
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = (
         "name", "amount", "transaction_id",
-        "frequency", "status", "site", "created_on", "updated_on"
+        "frequency", "status", "created_on", "updated_on"
     )
     list_filter = ("status", "frequency", "site", "created_on")
     search_fields = ("name", "email", "transaction_id", "mobile")
