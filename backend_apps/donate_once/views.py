@@ -5,7 +5,7 @@ import json
 from django.views import View
 from django.shortcuts import render, redirect
 from backend_apps.central.services import PhonePeService
-from backend_apps.donate_once.models import DonateOnce, DonateOnceLog
+from backend_apps.donate_once.models import DonateOnce
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from backend_apps.central import constants as PhonePeConstants
