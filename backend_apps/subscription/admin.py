@@ -9,6 +9,6 @@ class SubscriptionAdmin(admin.ModelAdmin):
         "name", "amount", "transaction_id",
         "frequency", "status", "created_on", "updated_on"
     )
-    list_filter = ("status", "frequency", "site", "created_on")
+    list_filter = ("status", "frequency", "created_on")
     search_fields = ("name", "email", "transaction_id", "mobile")
     ordering = ("-created_on",)
