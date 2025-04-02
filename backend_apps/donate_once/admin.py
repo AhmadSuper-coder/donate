@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import DonateOnce
-from .models import DonateOnceLog
+# from .models import DonateOnceLog
 
 # Register your models here.
 
