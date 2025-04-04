@@ -40,6 +40,7 @@ class SubscriptionCreateView(APIView):
         pan = request.POST.get('pan')
         state = request.POST.get('state')
         frequency = request.POST.get('subscriptionFrequency')
+        recurring_count =request.POST.get('recurring_count')
         merchant_subscription_id= PhonePeService.generate_merchant_transaction_id()
         merchant_user_id= PhonePeService.generate_merchant_user_id()
 
@@ -52,6 +53,7 @@ class SubscriptionCreateView(APIView):
         print("frequency", frequency)
         print("merchant_txn_id", merchant_subscription_id)
         print("merchant_user_id", merchant_user_id)
+        print("recurring_count", recurring_count)
 
         # Create a subscription object (replace with actual model and fields)
         Subscription.objects.create(
@@ -76,11 +78,8 @@ class SubscriptionCreateView(APIView):
             "amountType": "FIXED",  # FIXED or VARIABLE
             "amount": int(amount) * 100,  # Convert to smallest currency unit (e.g., paise)
             "frequency": frequency.upper(),  # Ensure frequency is in uppercase
-            "recurringCount": 12,  # Replace with actual recurring count if dynamic
+            "recurringCount": recurring_count,  # Replace with actual recurring count if dynamic
             "mobileNumber": mobile,
-            "deviceContext": {
-                "phonePeVersionCode": 400922  # Only for ANDROID, replace if needed
-            }
         }
 
         print("Payload for PhonePe subscription:", payload)
