@@ -28,15 +28,15 @@ class Subscription(models.Model):
     pan = models.CharField(max_length=10, blank=True, null=True)  # Encrypted data
     email = models.EmailField()  # Encrypted data
     state = models.CharField(max_length=100)  # Encrypted data
-    transaction_id = models.CharField(max_length=255, unique=True)
+    merchant_subscription_id = models.CharField(max_length=255, null=True, blank=True)
+    merchant_user_id = models.CharField(max_length=255, null=True, blank=True)
     frequency = models.CharField(
         max_length=10, choices=FREQUENCY_CHOICES, blank=True, null=True
     )
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="Pending")
-    upi_id = models.CharField(max_length=255, blank=True, null=True)
 
     created_on = models.DateTimeField(auto_now_add=True)  # Set on creation
     updated_on = models.DateTimeField(auto_now=True)  # Updates on each save
 
     def __str__(self):
-        return f"{self.name} - {self.amount} - {self.transaction_id} - {self.site}"
+        return f"{self.name} - {self.amount}"

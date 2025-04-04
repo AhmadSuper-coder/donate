@@ -32,3 +32,6 @@ Thumbs.db
 # Ignore compiled static files
 staticfiles/
 node_modules/
+
+
+backend_apps/*/migrations/*.py

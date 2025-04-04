@@ -6,9 +6,9 @@ from .models import Subscription
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = (
-        "name", "amount", "transaction_id",
+        "id", "name", "amount","merchant_subscription_id", "merchant_user_id",
         "frequency", "status","created_on", "updated_on"
     )
     list_filter = ("status", "frequency", "created_on")
-    search_fields = ("name", "email", "transaction_id", "mobile")
+    search_fields = ("name", "email", "mobile")
     ordering = ("-created_on",)

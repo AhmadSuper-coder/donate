@@ -186,33 +186,33 @@
                     <div class="tab-pane fade" id="weekly" role="tabpanel">
                         <form action="/subscription/create/" method="post">
                             {% csrf_token %}
-                            <input type="hidden" name="subscriptionFrequency" value="WEEKLY">
+                            <input type="hidden" name="subscriptionFrequency" value="Weekly">
                             <h5 class="mt-4">Donate & Get Benefit of 80G</h5>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="amount" class="form-label">Amount *</label>
-                                <input type="number" name="amount" class="form-control" id="amount" min=
-                                1 required placeholder="Enter amount">
-                                <div class="invalid-feedback">Please enter minimum 1 Inr.</div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="amount" class="form-label">Amount *</label>
+                                    <input type="number" name="amount" class="form-control" id="amount" min=
+                                    1 required placeholder="Enter amount">
+                                    <div class="invalid-feedback">Please enter minimum 1 Inr.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="mobileNumber" class="form-label">Mobile Number *</label>
+                                    <input type="tel" class="form-control" name="mobile" id="mobileNumber" pattern="^[0-9]{10}$" placeholder="Enter Mobile" required>
+                                    <div class="invalid-feedback">Please enter a valid 10-digit mobile number.</div>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-                                <label for="mobileNumber" class="form-label">Mobile Number *</label>
-                                <input type="tel" class="form-control" name="mobile" id="mobileNumber" pattern="^[0-9]{10}$" placeholder="Enter Mobile" required>
-                                <div class="invalid-feedback">Please enter a valid 10-digit mobile number.</div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="name" class="form-label">Name *</label>
+                                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter Name" required>
+                                    <div class="invalid-feedback">Please enter your name.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">Email *</label>
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email" required>
+                                    <div class="invalid-feedback">Please enter a valid email address.</div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="name" class="form-label">Name *</label>
-                                <input type="text" class="form-control" id="name" name="name" placeholder="Enter Name" required>
-                                <div class="invalid-feedback">Please enter your name.</div>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="email" class="form-label">Email *</label>
-                                <input type="email" class="form-control" id="email" name="email" placeholder="Enter Email" required>
-                                <div class="invalid-feedback">Please enter a valid email address.</div>
-                            </div>
-                        </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="pan" class="form-label">PAN No.</label>
@@ -266,6 +266,15 @@
                             </div>
                         </div>
 
+                        <label for="recurringCount" class="form-label">Number of Recurring Payments</label>
+                        <select class="form-select" id="recurringCount" name="recurring_count" required>
+                            {% for i in recurring_range %}
+                                <option value="{{ i }}" {% if i == 15 %}selected{% endif %}>{{ i }} Times</option>
+                            {% endfor %}
+                        </select>
+                                                
+                        
+
                         <!-- ✅ Adding the UPI ID Input Field Here -->
                         <!-- <div class="row mb-3">
                             <div class="col-md-6">
@@ -277,7 +286,7 @@
                         </div> -->
                         <!-- ✅ End of UPI ID Field -->
 
-                        <div class="text-center">
+                        <div class="text-center mt-5">
                             <button type="submit" class="btn btn-custom">SUBSCRIBE</button>
                         </div>
                         </form>
@@ -292,7 +301,7 @@
                         <form action="/subscription/create/" method="post">
                             {% csrf_token %}
                             <input type="hidden" name="subscription_enabled" value="1">
-                            <input type="hidden" name="subscriptionFrequency" value="MONTHLY">
+                            <input type="hidden" name="subscriptionFrequency" value="Monthly">
 
                             <h5 class="mt-4">Donate & Get Benefit of 80G</h5>
                         <div class="row mb-3">
@@ -372,6 +381,14 @@
                                 <div class="invalid-feedback">Please select your state.</div>
                             </div>
                         </div>
+
+                        <label for="recurringCount" class="form-label">Number of Recurring Payments</label>
+                        <select class="form-select" id="recurringCount" name="recurring_count" required>
+                            {% for i in recurring_range %}
+                                <option value="{{ i }}" {% if i == 15 %}selected{% endif %}>{{ i }} Times</option>
+                            {% endfor %}
+                        </select>
+                        
                         <div class="text-center">
                             <button type="submit" class="btn btn-custom">SUBSCRIBE</button>
                         </div>
@@ -381,7 +398,7 @@
                     <div class="tab-pane fade" id="quarterly" role="tabpanel">
                         <form action="/subscription/create/" method="post">
                             {% csrf_token %}
-                            <input type="hidden" name="subscriptionFrequency" value="QUARTERLY">
+                            <input type="hidden" name="subscriptionFrequency" value="Quarterly">
                             <h5 class="mt-4">Donate & Get Benefit of 80G</h5>
                         <div class="row mb-3">
                             <div class="col-md-6">
@@ -460,6 +477,14 @@
                                 <div class="invalid-feedback">Please select your state.</div>
                             </div>
                         </div>
+
+                        <label for="recurringCount" class="form-label">Number of Recurring Payments</label>
+                        <select class="form-select" id="recurringCount" name="recurring_count" required>
+                            {% for i in recurring_range %}
+                                <option value="{{ i }}" {% if i == 15 %}selected{% endif %}>{{ i }} Times</option>
+                            {% endfor %}
+                        </select>
+
                         <div class="text-center">
                             <button type="submit" class="btn btn-custom">SUBSCRIBE</button>
                         </div>
@@ -468,7 +493,7 @@
                     <div class="tab-pane fade" id="yearly" role="tabpanel">
                         <form action="/subscription/create/" method="post">
                             {% csrf_token %}
-                            <input type="hidden" name="subscriptionFrequency" value="YEARLY">
+                            <input type="hidden" name="subscriptionFrequency" value="Yearly">
                             <h5 class="mt-4">Donate & Get Benefit of 80G</h5>
                         <div class="row mb-3">
                             <div class="col-md-6">
@@ -547,6 +572,14 @@
                                 <div class="invalid-feedback">Please select your state.</div>
                             </div>
                         </div>
+
+                        <label for="recurringCount" class="form-label">Number of Recurring Payments</label>
+                        <select class="form-select" id="recurringCount" name="recurring_count" required>
+                            {% for i in recurring_range %}
+                                <option value="{{ i }}" {% if i == 15 %}selected{% endif %}>{{ i }} Times</option>
+                            {% endfor %}
+                        </select>
+
                         <div class="text-center">
                             <button type="submit" class="btn btn-custom">SUBSCRIBE</button>
                         </div>
