@@ -118,9 +118,15 @@ class PhonePeService:
         if callback_url:
             headers["X-CALLBACK-URL"] = callback_url
 
-        print(endpoint, headers)
-
         return headers
+
+
+    @staticmethod
+    def generate_auth_request_id():
+        """Generate a random 25-digit auth request ID with epoch time"""
+        epoch_time = int(time.time() * 1000)  # Current epoch time in milliseconds
+        random_number = random.randint(10**(25 - len(str(epoch_time)) - 1), (10**(25 - len(str(epoch_time))) - 1))
+        return f"{epoch_time}{random_number}"
 
     @staticmethod
     def generate_merchant_user_id():
