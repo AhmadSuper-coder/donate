@@ -3,9 +3,9 @@ from django.db import models
 # Create your models here.
 class DonateOnce(models.Model):
     STATUS_CHOICES = [
-        ("Pending", "Pending"),
-        ("Success", "Success"),
-        ("Failed", "Failed"),
+        ("pending", "Pending"),
+        ("success", "Success"),
+        ("failed", "Failed"),
     ]
 
     # SITE_CHOICES = [
