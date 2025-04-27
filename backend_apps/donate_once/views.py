@@ -94,6 +94,8 @@ class DonateOnceView(View):
                     field_name='donate_once_response',
                     data=response_data
                 )
+                # Saving because while creation of the object, status is pending and not showing in the admin  
+                donation.save()
                 if response_data.get('success'):
                     # Handle successful response
                     redirect_info = response_data.get('data', {}).get('instrumentResponse', {}).get('redirectInfo', {})
@@ -162,6 +164,8 @@ class RedirectReceiptView(View):
 
             # if callback is present then transaction is successfullsuccess
             if donation.call_back_status:
+                donation.state="success"
+                donation.save()
                 return render(request, 'receipt.html', {"data": data})
 
 
@@ -179,6 +183,9 @@ class RedirectReceiptView(View):
                     data=response_data
                 )
                 if response_data.get('success') and response_data.get('code') == 'PAYMENT_SUCCESS':
+                    # Update the donation status to success
+                    donation.status = "success"
+                    donation.save()
                     return render(request, 'receipt.html', {"data": data})
                 elif response_data.get('success') and response_data.get('code') == 'PAYMENT_PENDING':
                     
@@ -192,6 +199,9 @@ class RedirectReceiptView(View):
                         status_response_data = status_response.json()
                         print("status_response_data", status_response_data)
                         if status_response_data.get('success') and status_response_data.get('code') == 'PAYMENT_SUCCESS':
+                            # Update the donation status to success
+                            donation.status = "success"
+                            donation.save()
                             return render(request, 'receipt.html', {"data": data})
                         elif status_response_data.get('success') and status_response_data.get('code') == 'PAYMENT_FAILED':
                             break
@@ -236,6 +246,9 @@ class RedirectReceiptView(View):
                 )
 
                 if cancel_response_data.get('code') == 'PAYMENT_ALREADY_COMPLETED':
+                    # Update the donation status to success
+                    donation.status = "success"
+                    donation.save()
                     return render(request, 'receipt.html', {"data": data})
                 else:
                     return render(request, 'payment_failed.html', {"data": data})
@@ -248,7 +261,6 @@ class RedirectReceiptView(View):
             )
 
             cancel_response_data = cancel_response.json()
-            print("Cancelation api is being hit from here")
             DonateOnceLog.create_or_update(
                     donate_once_id=donation.id,
                     field_name='cancelation_api_response',
