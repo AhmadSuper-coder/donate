@@ -27,12 +27,12 @@ SECRET_KEY = config('SECRET_KEY', default='your_default_secret_key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['rankuptechnology.pythonanywhere.com', "pay.angelsfoundationindia.org", "*"]
+ALLOWED_HOSTS = ['rankuptechnology.pythonanywhere.com', "donate.angelsfoundationindia.org", "*"]
 
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://pay.angelsfoundationindia.org', 
-    'https://www.pay.angelsfoundationindia.org'
+    'https://donate.angelsfoundationindia.org', 
+    'https://www.donate.angelsfoundationindia.org'
 ]
 
 
